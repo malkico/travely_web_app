@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react"
 import jwt_decode from "jwt-decode"
 import axios from "axios"
+import Autocomplete from "react-google-autocomplete"
 
 function Profile() {
     const [name, setName] = useState("")
     const [email, setEmail] = useState("")
     const [currentLocation, setCurrentLocation] = useState("")
+    const [fullCurrentLocation, setFullCurrentLocation] = useState("")
     const [nextDestinations, setNextDestinations] = useState("")
+    const [fullNextDestinations, setFullNextDestinations] = useState("")
     const [password, setPassword] = useState("")
     const [password_2, setPassword_2] = useState("")
     const [influencer, setInfluencer] = useState(undefined)
@@ -15,6 +18,22 @@ function Profile() {
     const [alert, setAlert] = useState(null)
     const [success, setSuccess] = useState(false)
 
+    const handleCurrentLocationSelected = (place) => {
+        const { formatted_address } = place
+        setCurrentLocation(formatted_address)
+        setFullCurrentLocation(
+            `${formatted_address}|${place.geometry.location.lat()}|${place.geometry.location.lng()}`
+        )
+    }
+
+    const handleNextDestinationsSelected = (place) => {
+        const { formatted_address } = place
+        setNextDestinations(formatted_address)
+        setFullNextDestinations(
+            `${formatted_address}|${place.geometry.location.lat()}|${place.geometry.location.lng()}`
+        )
+    }
+
     useEffect(() => {
         const token = localStorage.getItem("token")
         const influencer_decoded = jwt_decode(token).influencer
@@ -22,15 +41,16 @@ function Profile() {
 
         setName(influencer_decoded.name)
         setEmail(influencer_decoded.email)
-        setCurrentLocation(influencer_decoded.currentLocation || "")
-        setNextDestinations(influencer_decoded.nextDestinations || "")
+        setCurrentLocation(
+            influencer_decoded.currentLocation?.split("|")[0] || ""
+        )
+        setFullCurrentLocation(influencer_decoded.currentLocation || "")
+        setNextDestinations(
+            influencer_decoded.nextDestinations?.split("|")[0] || "" || ""
+        )
+        setFullNextDestinations(influencer_decoded.nextDestinations || "")
         setPicture(influencer_decoded?.picture)
     }, [])
-
-    /* useEffect(() => {
-        setPicture(influencer?.picture)
-        console.log("updating picture")
-    }, [influencer]) */
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -48,8 +68,8 @@ function Profile() {
             formData.append("name", name)
             formData.append("email", email)
             if (password) formData.append("password", password)
-            formData.append("currentLocation", currentLocation)
-            formData.append("nextDestinations", nextDestinations)
+            formData.append("currentLocation", fullCurrentLocation)
+            formData.append("nextDestinations", fullNextDestinations)
 
             const res = await axios.put(
                 `${process.env.REACT_APP_APP_API}/api/influencer/${influencer._id}`,
@@ -126,6 +146,7 @@ function Profile() {
                             {influencer && influencer.updated_at.split("T")[0]}
                         </span>
                     </h1>
+
                     <div className="mb-4">
                         <label
                             className="block text-gray-700 text-sm font-bold mb-2"
@@ -165,13 +186,18 @@ function Profile() {
                         >
                             Current Location
                         </label>
-                        <input
+                        <Autocomplete
+                            apiKey="AIzaSyD3JDQLfCBWITPfErsQqgWonSnweYPlTY4"
                             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                             id="currentLocation"
                             type="text"
                             placeholder="Current Location"
                             value={currentLocation}
                             onChange={(e) => setCurrentLocation(e.target.value)}
+                            types={["(regions)"]}
+                            onPlaceSelected={(place) =>
+                                handleCurrentLocationSelected(place)
+                            }
                         />
                     </div>
                     <div className="mb-4">
@@ -181,7 +207,9 @@ function Profile() {
                         >
                             Next Destinations
                         </label>
-                        <input
+
+                        <Autocomplete
+                            apiKey="AIzaSyD3JDQLfCBWITPfErsQqgWonSnweYPlTY4"
                             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                             id="nextDestinations"
                             type="text"
@@ -190,8 +218,27 @@ function Profile() {
                             onChange={(e) =>
                                 setNextDestinations(e.target.value)
                             }
+                            types={["(regions)"]}
+                            onPlaceSelected={(place) =>
+                                handleNextDestinationsSelected(place)
+                            }
                         />
                     </div>
+
+                    <input
+                        type="hidden"
+                        value={fullCurrentLocation || currentLocation}
+                        onChange={(e) => setFullCurrentLocation(e.target.value)}
+                    />
+
+                    <input
+                        type="hidden"
+                        value={fullNextDestinations || nextDestinations}
+                        onChange={(e) =>
+                            setFullNextDestinations(e.target.value)
+                        }
+                    />
+
                     <div className="mb-4">
                         <label
                             className="block text-gray-700 text-sm font-bold mb-2"

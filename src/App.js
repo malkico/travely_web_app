@@ -1,4 +1,6 @@
 import * as React from "react"
+import { useState } from "react"
+
 import { Routes, Route, Outlet, Link } from "react-router-dom"
 import Index from "./components/Index"
 import Influencers from "./components/Influencers"
@@ -32,36 +34,81 @@ export default function App() {
 }
 
 function Layout() {
+    const [isMenuOpen, setIsMenuOpen] = useState(false)
     return (
         <>
             <header className="bg-blue-500 py-4">
                 <div className="container mx-auto px-4">
-                    <nav className="flex items-center justify-between">
-                        <div className="text-white text-xl font-bold">
-                            Plateforme de Voyages
+                    <nav className="bg-blue-500">
+                        <div
+                            className="container mx-auto px-4 md:flex md:items-center md:justify-between
+"
+                        >
+                            <div className="flex items-center justify-between py-4">
+                                <div className="text-white text-xl font-bold">
+                                    Plateforme de Voyages
+                                </div>
+                                <button
+                                    className="text-white focus:outline-none md:hidden"
+                                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                                >
+                                    <svg
+                                        className="h-6 w-6"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    >
+                                        {isMenuOpen ? (
+                                            <path d="M6 18L18 6M6 6l12 12" />
+                                        ) : (
+                                            <path d="M3 12h18M3 6h18M3 18h18" />
+                                        )}
+                                    </svg>
+                                </button>
+                            </div>
+                            <ul
+                                className={`md:flex ${
+                                    isMenuOpen ? "block" : "hidden"
+                                }`}
+                            >
+                                <li>
+                                    <a
+                                        href="/"
+                                        className="block py-2 px-2 text-white"
+                                    >
+                                        Accueil
+                                    </a>
+                                </li>
+                                <li>
+                                    <a
+                                        href="/influencers"
+                                        className="block py-2 px-2 text-white"
+                                    >
+                                        Influenceurs
+                                    </a>
+                                </li>
+                                <li>
+                                    <a
+                                        href="/signup"
+                                        className="block py-2 px-2 text-white"
+                                    >
+                                        Sign up as an influencer
+                                    </a>
+                                </li>
+                                <li>
+                                    <a
+                                        href="/login"
+                                        className="block py-2 px-2 text-white"
+                                    >
+                                        Login
+                                    </a>
+                                </li>
+                            </ul>
                         </div>
-                        <ul className="flex items-center space-x-4">
-                            <li>
-                                <a href="/" className="text-white">
-                                    Accueil
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/influencers" className="text-white">
-                                    Influenceurs
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/signup" className="text-white">
-                                    Sign up as an influencer
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/login" className="text-white">
-                                    Login
-                                </a>
-                            </li>
-                        </ul>
                     </nav>
                 </div>
             </header>

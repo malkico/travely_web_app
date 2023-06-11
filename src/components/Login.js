@@ -117,12 +117,14 @@ function Login() {
                         &copy;2023 <a href="/">{process.env.REACT_APP_NAME}</a>.
                         All rights reserved.
                     </p>
-                    <img
-                        src={logo}
-                        alt={`logo ${process.env.REACT_APP_NAME}`}
-                        width={120}
-                        className="mx-auto"
-                    />
+                    <a href="/">
+                        <img
+                            src={logo}
+                            alt={`logo ${process.env.REACT_APP_NAME}`}
+                            width={120}
+                            className="mx-auto"
+                        />
+                    </a>
                 </div>
             </div>
         </>
